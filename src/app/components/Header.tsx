@@ -71,9 +71,14 @@ const Header = () => {
               </Button>
             </>
           ) : (
-            <Button component={Link} href="/login" sx={navStyle}>
-              Login
-            </Button>
+            <>
+              <Button component={Link} href="/login" sx={navStyle}>
+                Login
+              </Button>
+              <Button component={Link} href="/admin-login" sx={navStyle}>
+                Admin Login
+              </Button>
+            </>           
           )}
         </Box>
       </Toolbar>
