@@ -9,18 +9,18 @@ import {
   Typography,
   InputAdornment,
   CircularProgress,
+  Paper,
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
-import GoogleIcon from "@mui/icons-material/Google";
-import Link from "next/link";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
   const {
     control,
     handleSubmit,
@@ -62,24 +62,26 @@ export default function LoginPage() {
           px: 2,
         }}
       >
-        <Container
-          maxWidth="sm"
+        <Paper
+          elevation={3}
           sx={{
+            width: "100%",
+            maxWidth: 480,
             backgroundColor: "#ffffff",
             p: 4,
             borderRadius: 4,
             boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.1)",
           }}
         >
-          <Typography
-            variant="h4"
-            fontWeight="bold"
-            color="primary"
-            textAlign="center"
-            mb={3}
-          >
-            Login
-          </Typography>
+          <Box textAlign="center" mb={3}>
+            <AdminPanelSettingsIcon sx={{ fontSize: 40, color: "#1976d2" }} />
+            <Typography variant="h5" fontWeight="bold" color="primary" mt={1}>
+              Admin Login
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#64748b" }}>
+              Access your admin panel
+            </Typography>
+          </Box>
 
           <form onSubmit={handleSubmit(onSubmit)}>
             {/* Email Input */}
@@ -98,7 +100,7 @@ export default function LoginPage() {
                 <TextField
                   {...field}
                   fullWidth
-                  label="Email"
+                  label="Admin Email"
                   variant="outlined"
                   margin="normal"
                   InputProps={{
@@ -159,37 +161,10 @@ export default function LoginPage() {
               }}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Login"}
+              {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Login as Admin"}
             </Button>
           </form>
-
-          {/* Google Login */}
-          <Button
-            fullWidth
-            variant="outlined"
-            size="large"
-            sx={{
-              mt: 2,
-              borderRadius: "30px",
-              textTransform: "none",
-              fontSize: "16px",
-              color: "#000",
-              borderColor: "#ccc",
-            }}
-            startIcon={<GoogleIcon />}
-            onClick={() => toast.info("🔹 Google login coming soon!", { position: "top-right" })}
-          >
-            Login with Google
-          </Button>
-
-          {/* Register Link */}
-          <Typography textAlign="center" mt={3}>
-            New User?{" "}
-            <Link href="/register" style={{ color: "#1976d2", fontWeight: "bold" }}>
-              Register here
-            </Link>
-          </Typography>
-        </Container>
+        </Paper>
       </Box>
     </>
   );

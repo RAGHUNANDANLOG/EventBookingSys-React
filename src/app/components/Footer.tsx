@@ -6,10 +6,10 @@ const Footer = () => {
   return (
     <Box
       sx={{
-        background: "linear-gradient(90deg, #1f1c2c, #928dab)",
+        background: "linear-gradient(90deg, #0f2027, #203a43, #2c5364)",
         color: "#ffffff",
         py: 4,
-        mt: 6,
+        mt: 0,
       }}
     >
       <Container maxWidth="lg" sx={{ textAlign: "center" }}>
