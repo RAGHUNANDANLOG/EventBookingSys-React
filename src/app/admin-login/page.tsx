@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   Box,
   Button,
-  Container,
   TextField,
   Typography,
   InputAdornment,
@@ -34,15 +33,14 @@ export default function AdminLoginPage() {
   const onSubmit = async (data: any) => {
     try {
       setLoading(true);
-      const response = await axios.post(`${API_URL}/auth/login`, data);
-
-      localStorage.setItem("email", response.data.email);
-      localStorage.setItem("token", response.data.accessToken);
+      const response = await axios.post(`${API_URL}/admin-user/login`, data); // ✅ Updated endpoint
+console.log(response.data);
 
       toast.success("Login successful!", { autoClose: 2000 });
-      router.push("/dashboard");
+      router.push("/approveBooking");
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+      const errorMessage =
+        error.response?.data?.message || "Login failed. Please try again.";
       toast.error(errorMessage, { position: "top-right" });
     } finally {
       setLoading(false);
@@ -84,7 +82,6 @@ export default function AdminLoginPage() {
           </Box>
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            {/* Email Input */}
             <Controller
               name="email"
               control={control}
@@ -92,7 +89,8 @@ export default function AdminLoginPage() {
               rules={{
                 required: "Email is required",
                 pattern: {
-                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                  value:
+                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
                   message: "Invalid email format",
                 },
               }}
@@ -116,14 +114,16 @@ export default function AdminLoginPage() {
               )}
             />
 
-            {/* Password Input */}
             <Controller
               name="password"
               control={control}
               defaultValue=""
               rules={{
                 required: "Password is required",
-                minLength: { value: 6, message: "Password must be at least 6 characters" },
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
               }}
               render={({ field }) => (
                 <TextField
@@ -146,7 +146,6 @@ export default function AdminLoginPage() {
               )}
             />
 
-            {/* Login Button */}
             <Button
               type="submit"
               fullWidth
@@ -161,7 +160,11 @@ export default function AdminLoginPage() {
               }}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Login as Admin"}
+              {loading ? (
+                <CircularProgress size={24} sx={{ color: "#fff" }} />
+              ) : (
+                "Login as Admin"
+              )}
             </Button>
           </form>
         </Paper>
