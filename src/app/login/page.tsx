@@ -182,11 +182,18 @@ export default function LoginPage() {
             Login with Google
           </Button>
 
-          {/* Register Link */}
+          {/* Register & Exit Links */}
           <Typography textAlign="center" mt={3}>
             New User?{" "}
             <Link href="/register" style={{ color: "#1976d2", fontWeight: "bold" }}>
               Register here
+            </Link>
+          </Typography>
+
+          <Typography textAlign="center" mt={1}>
+            Want to leave?{" "}
+            <Link href="/" style={{ color: "#f44336", fontWeight: "bold" }}>
+              Exit
             </Link>
           </Typography>
         </Container>

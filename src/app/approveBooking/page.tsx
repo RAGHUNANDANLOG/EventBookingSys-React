@@ -166,7 +166,7 @@ export default function BookingApprovalPage() {
           </Select>
 
           <Paper sx={{ backgroundColor: "#2a2a40", px: 2, py: 1.5, color: "#fff", borderRadius: 2 }}>
-            👤 Total Customers: {filteredBookings.length}
+             Total Customers: {filteredBookings.length}
           </Paper>
 
           <Select

@@ -151,9 +151,16 @@ const handleSubmitAllMembers = async () => {
       userEmail: formData.userEmail,
     });
     console.log("All members submitted successfully:", response.data);
+    localStorage.setItem("userType",formData.userType);
+    localStorage.setItem("eventId",formData.eventId);
+    localStorage.setItem("numSeats",String(formData.numSeats));
+    localStorage.setItem("members",JSON.stringify(members));
+
     setOpenSnackbar(true); // show success
     setSubmissionSuccess(true);
-    onSubmitSuccess();
+    setTimeout(() => {
+      onSubmitSuccess();
+    }, 2000);
   } catch (error) {
     console.error("Error submitting members:", error);
   }
@@ -450,11 +457,10 @@ const handleSubmitAllMembers = async () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert onClose={() => setOpenSnackbar(false)} severity="success" variant="filled">
-          Form submitted successfully!
+        Your basic details have been submitted!
         </Alert>
       </Snackbar>
 </Grid>
-
               </Grid>
               <AddMemberModal
   open={openModal}
