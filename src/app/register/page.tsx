@@ -35,10 +35,17 @@ export default function RegisterPage() {
     try {
       setLoading(true);
       await axios.post(`${API_URL}/auth/register`, data);
-      toast.success("Registration successful! Please login.", { position: "top-right" });
+
+      toast.success("Registration successful! Please login.", {
+        position: "top-right",
+      });
+
       reset();
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Registration failed! Please try again.";
+      const errorMessage =
+        error.response?.data?.message ||
+        "Registration failed! Please try again.";
+
       toast.error(errorMessage, { position: "top-right" });
     } finally {
       setLoading(false);
@@ -101,6 +108,12 @@ export default function RegisterPage() {
                   }}
                   error={!!errors.fullName}
                   helperText={errors.fullName?.message as string}
+                  onBlur={() => {
+                    const errorMessage = errors.fullName?.message as string;
+                    if (errorMessage) {
+                      toast.error(errorMessage, { position: "top-right" });
+                    }
+                  }}
                 />
               )}
             />
@@ -133,6 +146,12 @@ export default function RegisterPage() {
                   }}
                   error={!!errors.email}
                   helperText={errors.email?.message as string}
+                  onBlur={() => {
+                    const errorMessage = errors.email?.message as string;
+                    if (errorMessage) {
+                      toast.error(errorMessage, { position: "top-right" });
+                    }
+                  }}
                 />
               )}
             />
@@ -166,11 +185,17 @@ export default function RegisterPage() {
                   }}
                   error={!!errors.password}
                   helperText={errors.password?.message as string}
+                  onBlur={() => {
+                    const errorMessage = errors.password?.message as string;
+                    if (errorMessage) {
+                      toast.error(errorMessage, { position: "top-right" });
+                    }
+                  }}
                 />
               )}
             />
 
-            {/* Register Button */}
+            {/* Submit Button */}
             <Button
               type="submit"
               fullWidth
@@ -185,15 +210,26 @@ export default function RegisterPage() {
               }}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Sign Up"}
+              {loading ? (
+                <CircularProgress size={24} sx={{ color: "#fff" }} />
+              ) : (
+                "Sign Up"
+              )}
             </Button>
           </form>
 
-          {/* Login Link */}
+          {/* Login and Exit Links */}
           <Typography textAlign="center" mt={3}>
             Already have an account?{" "}
             <Link href="/login" style={{ color: "#1976d2", fontWeight: "bold" }}>
               Login here
+            </Link>
+          </Typography>
+
+          <Typography textAlign="center" mt={1}>
+            Want to leave?{" "}
+            <Link href="/" style={{ color: "#f44336", fontWeight: "bold" }}>
+              Exit
             </Link>
           </Typography>
         </Container>
