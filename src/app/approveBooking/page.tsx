@@ -24,14 +24,18 @@ import {
   Select,
   MenuItem,
   ListItemButton,
+  Tooltip,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import EventIcon from "@mui/icons-material/Event";
 import PersonIcon from "@mui/icons-material/Person";
 import TheaterComedyIcon from "@mui/icons-material/Theaters";
 import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { useRouter } from "next/navigation";
+import { string } from "prop-types";
 
 export default function BookingApprovalPage() {
   const [search, setSearch] = useState("");
@@ -39,19 +43,34 @@ export default function BookingApprovalPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [eventBookings, setEventBookings] = useState<Record<string, any[]>>({});
+  const router = useRouter();
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/event");
-        const grouped = res.data.reduce((acc: Record<string, any[]>, curr: any) => {
+        const userType = "organization";
+  
+        const res = await fetch("http://localhost:4000/admin/adminApprove", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userType }),
+        });
+  
+        const data = await res.json();
+  
+        const grouped = data.reduce((acc: Record<string, any[]>, curr: any) => {
           const event = curr.eventName;
           if (!acc[event]) acc[event] = [];
-          acc[event].push({ ...curr, name: curr.userEmail.split("@")[0], status: "Pending" });
+          acc[event].push({
+            ...curr,
+            name: curr.userEmail.split("@")[0],
+            status: "Pending",
+          });
           return acc;
         }, {});
+  
         setEventBookings(grouped);
-
+  
         const eventNames = Object.keys(grouped);
         if (eventNames.length > 0) {
           setSelectedEvent(eventNames[0]);
@@ -60,9 +79,16 @@ export default function BookingApprovalPage() {
         console.error("Error fetching events:", error);
       }
     };
-
+  
     fetchEvents();
   }, []);
+  
+  
+
+  const handleLogout = () => {
+    localStorage.clear();
+    router.push("/admin-login");
+  };
 
   const currentBookings = eventBookings[selectedEvent] || [];
   const filteredBookings = currentBookings.filter((booking) =>
@@ -75,33 +101,97 @@ export default function BookingApprovalPage() {
     currentPage * itemsPerPage
   );
 
+  const getIdProofUrl = (file: { data: number[]; type: string }) => {
+    const byteArray = new Uint8Array(file.data);
+    let mimeType = "application/pdf"; // default fallback
+  
+    // Try to infer MIME type from file signature (magic numbers)
+    const signature = byteArray.slice(0, 4).join(" ");
+    if (signature.startsWith("255 216")) {
+      mimeType = "image/jpeg";
+    } else if (signature.startsWith("137 80 78 71")) {
+      mimeType = "image/png";
+    } else if (signature.startsWith("37 80 68 70")) {
+      mimeType = "application/pdf";
+    }
+  
+    const blob = new Blob([byteArray], { type: mimeType });
+    return URL.createObjectURL(blob);
+  };
+
+  const getReqLetterUrl = (file: { data: number[]; type: string }) => {
+    const byteArray = new Uint8Array(file.data);
+    let mimeType = "application/pdf"; // default fallback
+  
+    // Try to infer MIME type from file signature (magic numbers)
+    const signature = byteArray.slice(0, 4).join(" ");
+    if (signature.startsWith("255 216")) {
+      mimeType = "image/jpeg";
+    } else if (signature.startsWith("137 80 78 71")) {
+      mimeType = "image/png";
+    } else if (signature.startsWith("37 80 68 70")) {
+      mimeType = "application/pdf";
+    }
+  
+    const blob = new Blob([byteArray], { type: mimeType });
+    return URL.createObjectURL(blob);
+  };
+  
   return (
     <Box sx={{ display: "flex", height: "100vh", backgroundColor: "#121212" }}>
       {/* Sidebar */}
-      <Box sx={{ width: 240, backgroundColor: "#1c1c2e", color: "#fff", p: 2 }}>
-        <Typography variant="h6" mb={3}>Admin Dashboard</Typography>
-        <List>
-          <ListItemButton>
-            <ListItemIcon sx={{ color: "#aaa" }}><DashboardIcon /></ListItemIcon>
-            <ListItemText primary="Dashboard" />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon sx={{ color: "#aaa" }}><EventIcon /></ListItemIcon>
-            <ListItemText primary="Event" />
-          </ListItemButton>
-          <ListItemButton selected>
-            <ListItemIcon sx={{ color: "#aaa" }}><PersonIcon /></ListItemIcon>
-            <ListItemText primary="Customer" />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon sx={{ color: "#aaa" }}><TheaterComedyIcon /></ListItemIcon>
-            <ListItemText primary="Theater" />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon sx={{ color: "#aaa" }}><SettingsIcon /></ListItemIcon>
-            <ListItemText primary="Settings" />
-          </ListItemButton>
-        </List>
+      <Box sx={{ width: 240, backgroundColor: "#1c1c2e", color: "#fff", p: 2, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <Box>
+          <Typography variant="h6" mb={3}>Admin Dashboard</Typography>
+          <List>
+            {[
+              { icon: <DashboardIcon />, label: "Dashboard" },
+              { icon: <EventIcon />, label: "Event" },
+              { icon: <PersonIcon />, label: "Customer", selected: true },
+              { icon: <TheaterComedyIcon />, label: "Theater" },
+              { icon: <SettingsIcon />, label: "Settings" },
+            ].map((item) => (
+              <ListItemButton
+                key={item.label}
+                selected={item.selected}
+                sx={{
+                  borderRadius: 2,
+                  '&:hover': {
+                    backgroundColor: "#333",
+                    color: "#1ac886",
+                    '& .MuiListItemIcon-root': {
+                      color: "#1ac886"
+                    }
+                  }
+                }}
+              >
+                <ListItemIcon sx={{ color: "#aaa" }}>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} />
+              </ListItemButton>
+            ))}
+
+            {/* Red Logout in Sidebar */}
+            <ListItemButton
+              onClick={handleLogout}
+              sx={{
+                mt: 2,
+                borderRadius: 2,
+                color: "#f44336",
+                '& .MuiListItemIcon-root': { color: "#f44336" },
+                '&:hover': {
+                  backgroundColor: "#330000",
+                  color: "#ff7961",
+                  '& .MuiListItemIcon-root': {
+                    color: "#ff7961"
+                  }
+                }
+              }}
+            >
+              <ListItemIcon><LogoutIcon /></ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </List>
+        </Box>
       </Box>
 
       {/* Main Content */}
@@ -145,6 +235,11 @@ export default function BookingApprovalPage() {
               <IconButton>
                 <Badge variant="dot" color="warning"><NotificationsIcon sx={{ color: "#aaa" }} /></Badge>
               </IconButton>
+              {/* <Tooltip title="Logout">
+                <IconButton onClick={handleLogout}>
+                  <LogoutIcon sx={{ color: "#aaa", '&:hover': { color: "#f44336" } }} />
+                </IconButton>
+              </Tooltip> */}
               <Avatar alt="Admin" src="/avatar.png" />
             </Box>
           </Toolbar>
@@ -166,7 +261,7 @@ export default function BookingApprovalPage() {
           </Select>
 
           <Paper sx={{ backgroundColor: "#2a2a40", px: 2, py: 1.5, color: "#fff", borderRadius: 2 }}>
-             Total Customers: {filteredBookings.length}
+            Total Customers: {filteredBookings.length}
           </Paper>
 
           <Select
@@ -189,9 +284,8 @@ export default function BookingApprovalPage() {
             <TableHead>
               <TableRow sx={{ backgroundColor: "#2a2a40" }}>
                 {[
-                  "Name", "Email", "Event Date", "Event Location", "Seats",
-                  "Mode of Travel", "Vehicle Details", "Address", "State", "District",
-                  "Pincode", "Country", "ID Type", "ID Number", "Actions"
+                  "Name", "Email", "Event Name","EventId","Event Date", "Event Location", "Seats",
+                  "Mode of Travel", "Vehicle Details", "Status", "Id Proof", "reqLetter", "Actions"
                 ].map(header => (
                   <TableCell key={header} sx={{ color: "#fff" }}>{header}</TableCell>
                 ))}
@@ -202,18 +296,46 @@ export default function BookingApprovalPage() {
                 <TableRow key={booking.id}>
                   <TableCell sx={{ color: "#fff" }}>{booking.name}</TableCell>
                   <TableCell sx={{ color: "#fff" }}>{booking.userEmail}</TableCell>
+                  <TableCell sx={{ color: "#fff" }}>{booking.eventName}</TableCell>
+                  <TableCell sx={{ color: "#fff" }}>{booking.eventId}</TableCell>
                   <TableCell sx={{ color: "#fff" }}>{booking.eventDate}</TableCell>
                   <TableCell sx={{ color: "#fff" }}>{booking.eventLoaction}</TableCell>
                   <TableCell sx={{ color: "#fff" }}>{booking.numSeats}</TableCell>
                   <TableCell sx={{ color: "#fff" }}>{booking.modeOfTravel || 'N/A'}</TableCell>
                   <TableCell sx={{ color: "#fff" }}>{booking.vehicleDetails || 'N/A'}</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>{booking.addressLine}</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>{booking.state}</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>{booking.district}</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>{booking.pincode}</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>{booking.country}</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>{booking.idType}</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>{booking.idNumber}</TableCell>
+                  <TableCell sx={{ color: "#fff" }}>{booking.status}</TableCell>
+                  <TableCell sx={{ color: "#fff" }}>
+                    {booking.idProof?.data ? (
+                      <Button
+                        variant="text"
+                        sx={{ color: "#1ac886" }}
+                        onClick={() => {
+                          const url = getIdProofUrl(booking.idProof);
+                          window.open(url, "_blank");
+                        }}
+                      >
+                        View
+                      </Button>
+                    ) : (
+                      <Typography sx={{ color: "#888" }}>No Proof</Typography>
+                    )}
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff" }}>
+                    {booking.idProof?.data ? (
+                      <Button
+                        variant="text"
+                        sx={{ color: "#1ac886" }}
+                        onClick={() => {
+                          const url = getReqLetterUrl(booking.orgRequestLetter);
+                          window.open(url, "_blank");
+                        }}
+                      >
+                        View
+                      </Button>
+                    ) : (
+                      <Typography sx={{ color: "#888" }}>No reqLetter</Typography>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Button variant="outlined" size="small" sx={{ color: "#1ac886", borderColor: "#1ac886", mr: 1 }}>Approve</Button>
                     <Button variant="outlined" size="small" sx={{ color: "#d32f2f", borderColor: "#d32f2f" }}>Reject</Button>
