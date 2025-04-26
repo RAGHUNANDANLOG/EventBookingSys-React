@@ -57,17 +57,18 @@ export default function BookingApprovalPage() {
         });
   
         const data = await res.json();
-  
+
         const grouped = data.reduce((acc: Record<string, any[]>, curr: any) => {
           const event = curr.eventName;
           if (!acc[event]) acc[event] = [];
           acc[event].push({
             ...curr,
             name: curr.userEmail.split("@")[0],
-            status: "Pending",
+            status: curr.status, // <-- get actual current status
           });
           return acc;
         }, {});
+
   
         setEventBookings(grouped);
   
@@ -135,6 +136,46 @@ export default function BookingApprovalPage() {
   
     const blob = new Blob([byteArray], { type: mimeType });
     return URL.createObjectURL(blob);
+  };
+  
+  const handleApproval = async (
+    id: string,
+    eventId: string,
+    eventName: string,
+    userEmail: string,
+    status: "approve" | "reject"
+  ) => {
+    try {
+      const response = await fetch("http://localhost:4000/admin/updateStatus", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          id,
+          eventId,
+          eventName,
+          userEmail,
+          status
+        })
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update status");
+      }
+  
+      // Update the UI after approval
+      setEventBookings((prev) => {
+        const updated = { ...prev };
+        const updatedList = updated[eventName].map((booking) =>
+          booking.id === id ? { ...booking, status } : booking
+        );
+        updated[eventName] = updatedList;
+        return updated;
+      });
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+    }
   };
   
   return (
@@ -337,8 +378,28 @@ export default function BookingApprovalPage() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Button variant="outlined" size="small" sx={{ color: "#1ac886", borderColor: "#1ac886", mr: 1 }}>Approve</Button>
-                    <Button variant="outlined" size="small" sx={{ color: "#d32f2f", borderColor: "#d32f2f" }}>Reject</Button>
+                  
+                  <Box display="flex" gap={1}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      color="success"
+                      sx={{ borderColor: "#1ac886", color: "#1ac886" }}
+                      onClick={() => handleApproval(booking.id, booking.eventId, booking.eventName, booking.userEmail, "approve")}
+                    >
+                      Approve
+                    </Button>
+
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      color="error"
+                      sx={{ borderColor: "#ff4d4f", color: "#ff4d4f" }}
+                      onClick={() => handleApproval(booking.id, booking.eventId, booking.eventName, booking.userEmail, "reject")}
+                    >
+                      Reject
+                    </Button>
+                  </Box>
                   </TableCell>
                 </TableRow>
               ))}
