@@ -50,7 +50,7 @@ export default function BookingApprovalPage() {
       try {
         const userType = "organization";
   
-        const res = await fetch("http://localhost:4000/admin/adminApprove", {
+        const res = await fetch("https://eventbookingsys-api.onrender.com/admin/adminApprove", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userType }),
@@ -146,7 +146,7 @@ export default function BookingApprovalPage() {
     status: "approve" | "reject"
   ) => {
     try {
-      const response = await fetch("http://localhost:4000/admin/updateStatus", {
+      const response = await fetch("https://eventbookingsys-api.onrender.com/admin/updateStatus", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
