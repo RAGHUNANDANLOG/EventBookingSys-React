@@ -190,6 +190,7 @@ export default function LoginPage() {
             </Link>
           </Typography>
 
+        
           <Typography textAlign="center" mt={1}>
             Want to leave?{" "}
             <Link href="/" style={{ color: "#f44336", fontWeight: "bold" }}>

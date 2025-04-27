@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:4000/admin-user/login', data);
+      const res = await axios.post("https://eventbookingsys-api.onrender.com/admin-user/login", data);
       if (res.data.success) {
         toast.success('Login successful!');
         router.push('/approveBooking');
