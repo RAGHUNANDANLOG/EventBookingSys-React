@@ -4,24 +4,10 @@ import { Box, Typography, Link, Container } from "@mui/material";
 
 const Footer = () => {
   return (
-    <Box
-      sx={{
-        px: 2,
-        background: "linear-gradient(90deg, #0f2027, #203a43, #2c5364)",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-      }}
-    >
+    <Box sx={{ bgcolor: "#0c0c0c", color: "#fff", py: 4 }}>
       <Container maxWidth="lg" sx={{ textAlign: "center" }}>
         {/* Footer Links */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            gap: 4,
-            mb: 2,
-          }}
-        >
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 3, mb: 2 }}>
           <Link href="/" sx={footerLinkStyle}>
             Home
           </Link>
@@ -37,10 +23,7 @@ const Footer = () => {
         </Box>
 
         {/* Copyright */}
-        <Typography
-          variant="body2"
-          sx={{ fontSize: "0.85rem", fontFamily: "Roboto, sans-serif" }}
-        >
+        <Typography variant="body2">
           © {new Date().getFullYear()} EventHub. All Rights Reserved.
         </Typography>
       </Container>
@@ -50,16 +33,11 @@ const Footer = () => {
 
 // Footer Link Style
 const footerLinkStyle = {
-  color: "#ffffff",
-  fontWeight: "600",
+  color: "#36d576",
   textDecoration: "none",
-  fontSize: "0.95rem",
-  letterSpacing: "0.5px",
-  transition: "all 0.3s ease",
-  "&:hover": {
-    color: "#00FFC6",
-    textDecoration: "underline",
-  },
+  fontWeight: "bold",
+  fontSize: "0.9rem",
+  "&:hover": { textDecoration: "underline" },
 };
 
 export default Footer;

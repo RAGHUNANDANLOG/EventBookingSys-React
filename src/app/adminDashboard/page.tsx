@@ -8,31 +8,21 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import EventIcon from "@mui/icons-material/Event";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import PreviewIcon from "@mui/icons-material/Preview";
-import BookOnlineIcon from "@mui/icons-material/BookOnline";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import LogoutIcon from "@mui/icons-material/Logout";
-
-import EventDetails from "../eventBooking/eventDetails";
-import UploadDocument from "../eventBooking/uploadDocument";
-import PreviewAndSubmit from "../eventBooking/previewSubmit";
-import TicketDownload from "../eventBooking/TicketDownload";
-
+import ApproveTicket from './approveTicket'
+import AddEvent from "./addEvent";
 const drawerWidth = 220;
 
 const menuItems = [
-  { text: "Event Details", icon: <EventIcon /> },
-  { text: "Upload Document", icon: <UploadFileIcon /> },
-  { text: "Preview & Submit", icon: <PreviewIcon /> },
-  { text: "Get Ticket", icon: <BookOnlineIcon /> },
+  { text: "Approve Ticket", icon: <HowToRegIcon /> },
+  { text: "Add Event", icon: <EventAvailableIcon /> },
 ];
 
 export default function EventDashboard() {
-  const [selectedTab, setSelectedTab] = useState("Event Details");
+  const [selectedTab, setSelectedTab] = useState("Approve Ticket");
   const [email, setEmail] = useState("");
-  const [eventSubmitted, setEventSubmitted] = useState(false);
-  const [documentUploaded, setDocumentUploaded] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
 
@@ -41,95 +31,48 @@ export default function EventDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem("email");
+    const storedEmail = localStorage.getItem("adminEmail");
     setEmail(storedEmail || "User");
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    sessionStorage.removeItem("token");
     localStorage.clear();
     sessionStorage.clear();
-    router.push("/");
-  };
-
-  const renderContent = () => {
-    switch (selectedTab) {
-      case "Event Details":
-        return (
-          <EventDetails
-            onSubmitSuccess={() => {
-              setEventSubmitted(true);
-              setSelectedTab("Upload Document");
-            }}
-          />
-        );
-      case "Upload Document":
-        return (
-          <UploadDocument
-            onUploadSuccess={() => {
-              setDocumentUploaded(true);
-              setSelectedTab("Preview & Submit");
-            }}
-          />
-        );
-      case "Preview & Submit":
-        return (
-          <PreviewAndSubmit
-          onUreviewSubmit={() => {
-              setSelectedTab("Get Ticket");
-            }}
-          />
-        );
-      case "Get Ticket":
-        return <TicketDownload />;
-      default:
-        return <Typography>No content found.</Typography>;
-    }
+    router.push("/admin");
   };
 
   const drawerContent = (
     <List>
-      {menuItems.map(({ text, icon }) => {
-        const isDisabled =
-        (!eventSubmitted && text !== "Event Details" && !eventSubmitted && text !== "Get Ticket") || // Step 1: Before submission, only Event Details is enabled
-        (eventSubmitted && !documentUploaded && text === "Review & Submit") || // Step 2: After event submitted, disable Review until document is uploaded
-        (eventSubmitted && !documentUploaded && text !== "Event Details" && text !== "Upload Document"); // Step 3: Block all tabs except Event Details and Upload Doc
-
-        return (
-          <Tooltip key={text} title={!hovered && !isMobile ? text : ""} placement="right">
-            <ListItem disablePadding>
-              <ListItemButton
-                selected={selectedTab === text}
-                onClick={() => !isDisabled && setSelectedTab(text)}
-                disabled={isDisabled}
+      {menuItems.map(({ text, icon }) => (
+        <Tooltip key={text} title={!hovered && !isMobile ? text : ""} placement="right">
+          <ListItem disablePadding>
+            <ListItemButton
+              selected={selectedTab === text}
+              onClick={() => setSelectedTab(text)}
+              sx={{
+                justifyContent: hovered || isMobile ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  justifyContent: hovered || isMobile ? "initial" : "center",
-                  px: 2.5,
-                  opacity: isDisabled ? 0.5 : 1,
-                  cursor: isDisabled ? "not-allowed" : "pointer",
+                  minWidth: 0,
+                  mr: hovered || isMobile ? 2 : "auto",
+                  justifyContent: "center",
+                  color: "#3b0083",
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: hovered || isMobile ? 2 : "auto",
-                    justifyContent: "center",
-                    color: "#3b0083",
-                  }}
-                >
-                  {icon}
-                </ListItemIcon>
-                {(hovered || isMobile) && (
-                  <Typography fontSize={14} color="#3b0083">
-                    {text}
-                  </Typography>
-                )}
-              </ListItemButton>
-            </ListItem>
-          </Tooltip>
-        );
-      })}
+                {icon}
+              </ListItemIcon>
+              {(hovered || isMobile) && (
+                <Typography fontSize={14} color="#3b0083">
+                  {text}
+                </Typography>
+              )}
+            </ListItemButton>
+          </ListItem>
+        </Tooltip>
+      ))}
 
       <Divider sx={{ my: 1 }} />
 
@@ -163,6 +106,21 @@ export default function EventDashboard() {
     </List>
   );
 
+  const renderContent = () => {
+    switch (selectedTab) {
+      case "Approve Ticket":
+        return(
+          <ApproveTicket />
+        )
+      case "Add Event":
+        return (
+          <AddEvent />
+        )
+      default:
+        return <Typography>No content found.</Typography>;
+    }
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <CssBaseline />
@@ -173,16 +131,14 @@ export default function EventDashboard() {
           zIndex: theme.zIndex.drawer + 1,
           bgcolor: "#3b0083",
           height: 56,
-          [theme.breakpoints.up("sm")]: {
-            height: 64,
-          },
+          [theme.breakpoints.up("sm")]: { height: 64 },
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between", minHeight: "inherit !important" }}>
           <Typography
             variant="h6"
             fontWeight="bold"
-            sx={{ fontSize: isMobile ? "1rem" : "1.25rem" , py: "12px"}}
+            sx={{ fontSize: isMobile ? "1rem" : "1.25rem", py: "12px" }}
           >
             EventHub
           </Typography>
@@ -277,22 +233,23 @@ export default function EventDashboard() {
           justifyContent: "center",
         }}
       >
-      <Box sx={{ width: "100%", maxWidth: 1000, minHeight: "80vh" }}>
+        <Box sx={{ width: "100%", maxWidth: 1000, minHeight: "80vh" }}>
           {renderContent()}
         </Box>
       </Box>
+
       <Box
-    sx={{
-      bgcolor: "#3b0083",
-      color: "white",
-      py: 2,
-      mt: "auto", // Push the footer to the bottom
-      textAlign: "center",
-      fontSize: "0.875rem",
-    }}
-  >
-    <Typography>© 2025 EventHub. All rights reserved.</Typography>
-  </Box>
+        sx={{
+          bgcolor: "#3b0083",
+          color: "white",
+          py: 2,
+          mt: "auto",
+          textAlign: "center",
+          fontSize: "0.875rem",
+        }}
+      >
+        <Typography>© 2025 EventHub. All rights reserved.</Typography>
+      </Box>
     </Box>
   );
 }

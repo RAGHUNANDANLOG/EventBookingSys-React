@@ -14,7 +14,13 @@ import {
   Typography,
 } from "@mui/material";
 
-export default function AddMemberModal({ open, onClose, members, setMembers, maxMembers }) {
+export default function AddMemberModal({
+  open,
+  onClose,
+  members,
+  setMembers,
+  maxMembers,
+}) {
   const [memberData, setMemberData] = React.useState({
     name: "",
     gender: "",
@@ -24,13 +30,60 @@ export default function AddMemberModal({ open, onClose, members, setMembers, max
     mobile: "",
   });
 
+  const [error, setError] = React.useState({
+    name: "",
+    idNumber: "",
+    mobile: "",
+    gender: "",
+    dob: "",
+    idType: "",
+  });
+
+  // Validate input to ensure no special characters (only letters, numbers, and spaces)
+  const validateInput = (name: string, value: string) => {
+    const regex = /^[A-Za-z0-9 ]*$/; // Allows only letters, numbers, and spaces
+    if (name === "name" || name === "idNumber" || name === "mobile") {
+      if (!regex.test(value)) {
+        return `${name.charAt(0).toUpperCase() + name.slice(1)} contains invalid characters.`;
+      }
+    }
+
+    if (name === "mobile" && value.length !== 10) {
+      return "Mobile number must be 10 digits long.";
+    }
+
+    if (name === "mobile" && !/^[0-9]*$/.test(value)) {
+      return "Mobile number must contain only numbers.";
+    }
+
+    return "";
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const validationError = validateInput(name, value);
+    setError((prev) => ({ ...prev, [name]: validationError }));
     setMemberData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAdd = () => {
-    if (members.length >= maxMembers) return;
+    // Check if all required fields are filled out and valid
+    let formValid = true;
+    const newError = { ...error };
+
+    // Check if any field is empty or invalid
+    Object.keys(memberData).forEach((key) => {
+      if (!memberData[key]) {
+        newError[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required.`;
+        formValid = false;
+      }
+    });
+
+    setError(newError);
+
+    // If form is invalid, don't add member
+    if (!formValid || members.length >= maxMembers) return;
+
     setMembers([...members, memberData]);
     setMemberData({
       name: "",
@@ -52,7 +105,7 @@ export default function AddMemberModal({ open, onClose, members, setMembers, max
           gutterBottom
           sx={{ color: "#3b0083" }}
         >
-        Add Member
+          Add Member
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
@@ -65,6 +118,8 @@ export default function AddMemberModal({ open, onClose, members, setMembers, max
               onChange={handleChange}
               variant="outlined"
               required
+              error={!!error.name}
+              helperText={error.name}
             />
           </Grid>
 
@@ -98,6 +153,8 @@ export default function AddMemberModal({ open, onClose, members, setMembers, max
               InputLabelProps={{
                 shrink: true,
               }}
+              error={!!error.dob}
+              helperText={error.dob}
             />
           </Grid>
 
@@ -127,6 +184,8 @@ export default function AddMemberModal({ open, onClose, members, setMembers, max
               value={memberData.idNumber}
               onChange={handleChange}
               required
+              error={!!error.idNumber}
+              helperText={error.idNumber}
             />
           </Grid>
 
@@ -140,6 +199,8 @@ export default function AddMemberModal({ open, onClose, members, setMembers, max
               onChange={handleChange}
               type="tel"
               required
+              error={!!error.mobile}
+              helperText={error.mobile}
             />
           </Grid>
         </Grid>
@@ -160,7 +221,7 @@ export default function AddMemberModal({ open, onClose, members, setMembers, max
           onClick={handleAdd}
           variant="contained"
           color="primary"
-          disabled={members.length >= maxMembers}
+          disabled={members.length >= maxMembers || Object.values(error).some((err) => err)}
         >
           Add Member
         </Button>
