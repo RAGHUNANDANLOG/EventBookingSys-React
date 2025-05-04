@@ -4,7 +4,7 @@ import { Box, Typography, Link, Container } from "@mui/material";
 
 const Footer = () => {
   return (
-    <Box sx={{ bgcolor: "#0c0c0c", color: "#fff", py: 4 }}>
+    <Box sx={{ bgcolor: "rgba(0,0,0,0.75)", color: "#fff", py: 4 }}>
       <Container maxWidth="lg" sx={{ textAlign: "center" }}>
         {/* Footer Links */}
         <Box sx={{ display: "flex", justifyContent: "center", gap: 3, mb: 2 }}>

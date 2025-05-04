@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -17,77 +17,90 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SearchIcon from "@mui/icons-material/Search";
 import Link from "next/link";
 import axios from "axios";
-import { json } from 'stream/consumers';
 
 export default function Home() {
   const [events, setEvents] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+
   const filteredEvents = events.filter((event) =>
     event.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-useEffect(() => {
-  const fetchEvents = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/admin`);
-      let data = await response.data;
-      setEvents(data); // Set the events data in state
-      localStorage.setItem("events", JSON.stringify(data));
-    } catch (error) {
-      console.error('Failed to fetch events:', error);
-    }
-  };
 
-  fetchEvents();
-}, []);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/admin`);
+        let data = await response.data;
+        setEvents(data);
+        localStorage.setItem("events", JSON.stringify(data));
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
   return (
-    <Box sx={{ bgcolor: "#1c1e21", color: "white", minHeight: "100vh", py: 5 }}>
-      {/* Hero Section */}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(to right, #1e3c72, #2a5298)",
+        py: 6,
+        color: "white",
+      }}
+    >
       <Container maxWidth="md" sx={{ textAlign: "center", mb: 5 }}>
-        <Typography variant="h4" fontWeight="bold" sx={{ mb: 1, color: "#64ffda" }}>
-          Find & Register for Top Events!
+        <Typography variant="h3" fontWeight="bold" sx={{ mb: 2 }}>
+          🌐 Discover Amazing Events
         </Typography>
-        <Typography variant="body1" sx={{ mb: 3, color: "#b0bec5" }}>
-          Explore conferences, concerts, and workshops worldwide.
+        <Typography variant="body1" sx={{ mb: 3, color: "#e0e0e0" }}>
+          Search and register for events around the world.
         </Typography>
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Search for events..."
+          placeholder="Search events..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{
-            bgcolor: "white",
-            borderRadius: 30,
-            "& .MuiOutlinedInput-root": { borderRadius: 30, px: 2 },
+            bgcolor: "rgba(255, 255, 255, 0.15)",
+            borderRadius: 3,
+            "& .MuiOutlinedInput-root": {
+              color: "white",
+              "& fieldset": { border: "none" },
+            },
           }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon color="action" />
+                <SearchIcon sx={{ color: "white" }} />
               </InputAdornment>
             ),
           }}
         />
       </Container>
 
-      {/* Events Section */}
-      <Container>
-        <Typography variant="h5" fontWeight="bold" sx={{ textAlign: "center", mb: 4, color: "#64ffda" }}>
-          Upcoming Events
-        </Typography>
-        <Grid container spacing={3} justifyContent="center">
+      <Container maxWidth="lg">
+        <Grid container spacing={4}>
           {filteredEvents.map((event, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+            <Grid item xs={12} sm={6} md={4} key={index}>
               <Card
                 sx={{
-                  bgcolor: "#2c2f33",
-                  borderRadius: 3,
+                  backdropFilter: "blur(10px)",
+                  background: "rgba(255,255,255,0.1)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  color: "white",
+                  borderRadius: 4,
                   boxShadow: 3,
+                  overflow: "hidden",
                   transition: "0.3s",
-                  height: "100%",
-                  "&:hover": { boxShadow: 6, transform: "scale(1.03)" },
+                  "&:hover": {
+                    boxShadow: 6,
+                    transform: "scale(1.03)",
+                  },
                 }}
               >
                 <CardMedia
@@ -95,30 +108,47 @@ useEffect(() => {
                   height="180"
                   image={event.image}
                   alt={event.title}
-                  onError={(e) => (e.currentTarget.src = "/default-event.jpg")}
+                  onError={(e) =>
+                    (e.currentTarget.src = "/default-event.jpg")
+                  }
                 />
                 <CardContent>
-                  <Typography variant="subtitle1" fontWeight="bold" sx={{ color: "#64ffda" }}>
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
                     {event.title}
                   </Typography>
-                  <Box sx={{ display: "flex", alignItems: "center", mt: 1, color: "#b0bec5" }}>
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                     <CalendarTodayIcon sx={{ fontSize: 18, mr: 1 }} />
                     <Typography variant="body2">{event.date}</Typography>
                   </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", mt: 1, color: "#b0bec5" }}>
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                     <LocationOnIcon sx={{ fontSize: 18, mr: 1 }} />
                     <Typography variant="body2">{event.location}</Typography>
                   </Box>
-                  <Button
-                    component={Link}
-                    href="/register"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{ mt: 2, borderRadius: 2 }}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mt: 2,
+                    }}
                   >
-                    Register Now
-                  </Button>
+                    <Button
+                      component={Link}
+                      href="/register"
+                      variant="contained"
+                      sx={{
+                        borderRadius: 2,
+                        textTransform: "none",
+                        backgroundColor: "#64ffda",
+                        color: "#003844",
+                        "&:hover": {
+                          backgroundColor: "#1de9b6",
+                        },
+                      }}
+                    >
+                      Register Now
+                    </Button>
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
