@@ -25,6 +25,10 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -33,6 +37,7 @@ import AddMemberModal from "./AddMemberModal";
 import { Snackbar, Alert } from '@mui/material';
 import Link from "next/link";
 import { useRouter } from 'next/router';
+import EditMemberDialog from "./EditMemberDialog";
 
 
 const theme = createTheme({
@@ -74,7 +79,9 @@ const [members, setMembers] = useState([]);
 const [submissionSuccess, setSubmissionSuccess] = useState(false);
 const [snackbarMessage, setSnackbarMessage] = useState("");
 const [snackbarColor, setSnackbarColor] = useState<"success" | "error" | "warning" | "info">("success"); // explicitly typing snackbarColor
-
+const [openDialog, setOpenDialog] = useState(false);
+const [selectedMember, setSelectedMember] = useState(null);
+const [error, setError] = useState({});
 useEffect(() => {
   const eventsData = localStorage.getItem("events");
   setEvents(JSON.parse(eventsData))
@@ -159,9 +166,17 @@ const handleSubmit = async (e) => {
       setSubmitted(true);
     }, 2000);
   } catch (error) {
-    console.error("Error saving event form data:", error);
-    setSnackbarColor('error');
-    setSnackbarMessage("Submission failed. Please check your inputs.");
+    if(error.response){
+      const errorMessage = error.response?.data?.message || 'Submission failed. Please try again later.';
+      setSnackbarColor('error');
+      setSnackbarMessage(errorMessage);
+    } else if (error.request) {
+      setSnackbarColor('error');
+      setSnackbarMessage("No response from server. Please check your connection.");
+    } else {
+      setSnackbarColor('error');
+      setSnackbarMessage("An unexpected error occurred. Please try again.");
+    }
     setOpenSnackbar(true);
   }
 };
@@ -172,6 +187,19 @@ const handleRemove = (index) => {
   updated.splice(index, 1);
   setMembers(updated);
 };
+  const handleEditClick = (member) => {
+    setSelectedMember(member);
+    setOpenDialog(true);
+  };
+
+  const updateMember = (updatedMember) => {
+    setMembers((prevMembers) =>
+      prevMembers.map((member) =>
+        member.id === selectedMember.id ? { ...member, ...updatedMember } : member
+      )
+    );
+  };
+
 const handleOpenModal = () => setOpenModal(true);
 const handleCloseModal = () => setOpenModal(false);
 const handleSubmitAllMembers = async () => {
@@ -180,8 +208,8 @@ const handleSubmitAllMembers = async () => {
       eventId: formData.eventId, // or however you're tracking the event
       members: members,
       userEmail: formData.userEmail,
+      userType: formData.userType,
     });
-    console.log("All members submitted successfully:", response.data);
     localStorage.setItem("userType",formData.userType);
     localStorage.setItem("eventId",formData.eventId);
     localStorage.setItem("numSeats",String(formData.numSeats));
@@ -485,14 +513,10 @@ const handleSubmitAllMembers = async () => {
 
       <Snackbar
         open={openSnackbar}
-        autoHideDuration={2000}
+        autoHideDuration={3000}
         onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        {/* <Alert onClose={() => setOpenSnackbar(false)} severity="success" variant="filled">
-        Your basic details have been submitted!
-        </Alert> */}
-
         <Alert onClose={() => setOpenSnackbar(false)}  severity={snackbarColor} variant="filled" sx={{ width: "100%" }}>
           {snackbarMessage}
         </Alert>
@@ -558,10 +582,11 @@ const handleSubmitAllMembers = async () => {
                         mr: 1,
                         "&:hover": { color: "#01579b" },
                       }}
-                      onClick={() => alert("Edit functionality coming soon!")}
+                      onClick={() => handleEditClick(member)}
                     >
                       <EditIcon fontSize="small" />
-                    </IconButton>
+                    </IconButton> 
+                  
                     <IconButton
                       size="small"
                       sx={{
@@ -577,6 +602,17 @@ const handleSubmitAllMembers = async () => {
               ))}
             </TableBody>
           </Table>
+          {selectedMember && (
+        <EditMemberDialog
+          open={openDialog}
+          onClose={() => setOpenDialog(false)}
+          memberData={selectedMember}
+          updateMember={updateMember}
+          error={error}
+          maxMembers={10}
+          members={members}
+        />
+      )}
         </TableContainer>
       </CardContent>
     </Card>
