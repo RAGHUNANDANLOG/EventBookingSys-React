@@ -112,6 +112,7 @@ Mobile   : ${m.mobile}`
     formData.append("userEmail", email);
     formData.append("eventId",eventId);
     formData.append("qrCode",qrCode);
+    formData.append("userType",userType);
     try {
       const response = await axios.post(`${API_URL}/event/finalSubmit`, formData);
       console.log("Event form data saved successfully:", response.data);
@@ -269,9 +270,6 @@ Mobile   : ${m.mobile}`
         overflow: "hidden",
       }}
     >
-      <Box sx={{ position: "absolute", top: -20, right: -20, opacity: 0.05 }}>
-        <img src="/ticket-icon.png" alt="ticket" width={150} />
-      </Box>
 
       <Typography
         variant="h5"
