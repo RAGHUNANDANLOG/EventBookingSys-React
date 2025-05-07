@@ -72,7 +72,7 @@ const Header = () => {
             mb: isMobile ? 1 : 0,
           }}
         >
-          Eventora
+          EventHub
         </Typography>
 
         {/* Navigation Buttons */}

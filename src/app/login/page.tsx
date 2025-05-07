@@ -1,173 +1,22 @@
-// "use client";
-
-// import { useState } from "react";
-// import { Box, Button, Container, TextField, Typography, InputAdornment, CircularProgress } from "@mui/material";
-// import EmailIcon from "@mui/icons-material/Email";
-// import LockIcon from "@mui/icons-material/Lock";
-// import GoogleIcon from "@mui/icons-material/Google";
-// import Link from "next/link";
-// import { useForm, Controller } from "react-hook-form";
-// import axios from "axios";
-// import { useRouter } from "next/navigation";
-// import { toast } from "react-toastify";
-
-// export default function LoginPage() {
-//   const {
-//     control,
-//     handleSubmit,
-//     formState: { errors },
-//   } = useForm();
-//   const [loading, setLoading] = useState(false);
-//   const router = useRouter();
-
-//   const API_URL = process.env.NEXT_PUBLIC_API_URL; // Use environment variable
-
-//   const onSubmit = async (data: any) => {
-//     try {
-//       console.log("data", data)
-//       setLoading(true);
-//       console.log("API URL", API_URL)
-//       const response = await axios.post(`${API_URL}/auth/login`, data);
-//       localStorage.setItem("email", response.data.email);
-//       localStorage.setItem("token", response.data.accessToken);
-      
-//       toast.success("Login successful!", { autoClose: 2000 });
-//       router.push("/dashboard");
-//     } catch (error: any) {
-//       const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
-//       toast.error(errorMessage);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <Box sx={{ bgcolor: "#1c1e21", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-//       <Container maxWidth="xs" sx={{ bgcolor: "#2a2d32", p: 4, borderRadius: 2, boxShadow: 3 }}>
-//         <Typography variant="h4" fontWeight="bold" color="white" textAlign="center" mb={2}>
-//           Login
-//         </Typography>
-
-//         <form onSubmit={handleSubmit(onSubmit)}>
-//           {/* Email Input */}
-//           <Controller
-//             name="email"
-//             control={control}
-//             defaultValue=""
-//             rules={{
-//               required: "Email is required",
-//               pattern: {
-//                 value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-//                 message: "Invalid email format",
-//               },
-//             }}
-//             render={({ field }) => (
-//               <TextField
-//                 {...field}
-//                 fullWidth
-//                 label="Email"
-//                 variant="outlined"
-//                 sx={{ bgcolor: "#333", borderRadius: 1, mb: 2, input: { color: "white" } }}
-//                 InputLabelProps={{ style: { color: "white" } }}
-//                 InputProps={{
-//                   startAdornment: (
-//                     <InputAdornment position="start">
-//                       <EmailIcon sx={{ color: "white" }} />
-//                     </InputAdornment>
-//                   ),
-//                 }}
-//                 error={!!errors.email}
-//                 helperText={errors.email?.message as string}
-//               />
-//             )}
-//           />
-
-//           {/* Password Input */}
-//           <Controller
-//             name="password"
-//             control={control}
-//             defaultValue=""
-//             rules={{
-//               required: "Password is required",
-//               minLength: { value: 6, message: "Password must be at least 6 characters" },
-//             }}
-//             render={({ field }) => (
-//               <TextField
-//                 {...field}
-//                 fullWidth
-//                 label="Password"
-//                 variant="outlined"
-//                 type="password"
-//                 sx={{ bgcolor: "#333", borderRadius: 1, mb: 3, input: { color: "white" } }}
-//                 InputLabelProps={{ style: { color: "white" } }}
-//                 InputProps={{
-//                   startAdornment: (
-//                     <InputAdornment position="start">
-//                       <LockIcon sx={{ color: "white" }} />
-//                     </InputAdornment>
-//                   ),
-//                 }}
-//                 error={!!errors.password}
-//                 helperText={errors.password?.message as string}
-//               />
-//             )}
-//           />
-
-//           {/* Login Button */}
-//           <Button type="submit" fullWidth variant="contained" color="success" sx={{ py: 1.5, fontSize: "16px", borderRadius: 2, mb: 2 }} disabled={loading}>
-//             {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Login"}
-//           </Button>
-//         </form>
-
-//         {/* Google Login */}
-//         <Button
-//           fullWidth
-//           variant="outlined"
-//           sx={{ color: "white", borderColor: "white", py: 1.5, fontSize: "16px", borderRadius: 2, mb: 2 }}
-//           startIcon={<GoogleIcon sx={{ color: "white" }} />}
-//           onClick={() => toast.info("🔹 Google login coming soon!")}
-//         >
-//           Login with Google
-//         </Button>
-
-//         {/* Register Link */}
-//         <Typography color="white" textAlign="center">
-//           New User?{" "}
-//           <Link href="/register" style={{ color: "#4caf50", fontWeight: "bold", textDecoration: "none" }}>
-//             Register here
-//           </Link>
-//         </Typography>
-        
-//         <Typography color="white" textAlign="center">
-//           Want to leave?{" "}
-//           <Link
-//             href="/"
-//             style={{
-//               color: "#f44336", // red color for exit
-//               fontWeight: "bold",
-//               textDecoration: "none",
-//             }}
-//           >
-//             Exit
-//           </Link>
-//         </Typography>
-//       </Container>
-//     </Box>
-//   );
-// }
 "use client";
 import { useState } from "react";
-import { Box, Button, Container, TextField, Typography, InputAdornment, CircularProgress, Snackbar } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  InputAdornment,
+  CircularProgress,
+  Snackbar,
+} from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import GoogleIcon from "@mui/icons-material/Google";
-import Link from "next/link";
+import MuiAlert from "@mui/material/Alert";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import MuiAlert from '@mui/material/Alert';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Link from "next/link";
 
 export default function LoginPage() {
   const {
@@ -175,40 +24,34 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const [loading, setLoading] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false); // State to control Snackbar visibility
-  const [snackbarMessage, setSnackbarMessage] = useState(""); // State to hold the Snackbar message
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("success"); // Snackbar severity type
-  const router = useRouter();
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL; // Use environment variable
+  const [loading, setLoading] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("success");
+
+  const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const onSubmit = async (data: any) => {
     try {
-      console.log("data", data);
       setLoading(true);
-
-      // Send login request to the backend
       const response = await axios.post(`${API_URL}/auth/login`, data);
-      
-      // Store token and email in local storage
+
       localStorage.setItem("email", response.data.email);
       localStorage.setItem("token", response.data.accessToken);
 
-      // Show success Snackbar
       setSnackbarMessage("Login successful!");
-      setSnackbarSeverity('success');
+      setSnackbarSeverity("success");
       setOpenSnackbar(true);
-      
-      // Redirect to dashboard after 2 seconds
+
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
     } catch (error: any) {
-      // Handle error from backend and show error message
       const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
       setSnackbarMessage(errorMessage);
-      setSnackbarSeverity('error');
+      setSnackbarSeverity("error");
       setOpenSnackbar(true);
     } finally {
       setLoading(false);
@@ -221,134 +64,219 @@ export default function LoginPage() {
 
   const handleGoogleLoginClick = () => {
     setSnackbarMessage("🔹 Google login coming soon!");
-    setSnackbarSeverity('info');
+    setSnackbarSeverity("info");
     setOpenSnackbar(true);
   };
 
   return (
-    <Box sx={{ bgcolor: "#1c1e21", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <Container maxWidth="xs" sx={{ bgcolor: "#2a2d32", p: 4, borderRadius: 2, boxShadow: 3 }}>
-        <Typography variant="h4" fontWeight="bold" color="white" textAlign="center" mb={2}>
-          Login
-        </Typography>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Email Input */}
-          <Controller
-            name="email"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: "Email is required",
-              pattern: {
-                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                message: "Invalid email format",
-              },
-            }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                label="Email"
-                variant="outlined"
-                sx={{ bgcolor: "#333", borderRadius: 1, mb: 2, input: { color: "white" } }}
-                InputLabelProps={{ style: { color: "white" } }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <EmailIcon sx={{ color: "white" }} />
-                    </InputAdornment>
-                  ),
-                }}
-                error={!!errors.email}
-                helperText={errors.email?.message as string}
-              />
-            )}
-          />
-
-          {/* Password Input */}
-          <Controller
-            name="password"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: "Password is required",
-              minLength: { value: 6, message: "Password must be at least 6 characters" },
-            }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                label="Password"
-                variant="outlined"
-                type="password"
-                sx={{ bgcolor: "#333", borderRadius: 1, mb: 3, input: { color: "white" } }}
-                InputLabelProps={{ style: { color: "white" } }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon sx={{ color: "white" }} />
-                    </InputAdornment>
-                  ),
-                }}
-                error={!!errors.password}
-                helperText={errors.password?.message as string}
-              />
-            )}
-          />
-
-          {/* Login Button */}
-          <Button type="submit" fullWidth variant="contained" color="success" sx={{ py: 1.5, fontSize: "16px", borderRadius: 2, mb: 2 }} disabled={loading}>
-            {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Login"}
-          </Button>
-        </form>
-
-        {/* Google Login */}
-        <Button
-          fullWidth
-          variant="outlined"
-          sx={{ color: "white", borderColor: "white", py: 1.5, fontSize: "16px", borderRadius: 2, mb: 2 }}
-          startIcon={<GoogleIcon sx={{ color: "white" }} />}
-          onClick={handleGoogleLoginClick}
+    <>
+      <Box
+        sx={{
+          height: "100vh",
+          background: "#041C32",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box
+          sx={{
+            width: "850px",
+            height: "500px",
+            position: "relative",
+            borderRadius: 2,
+            boxShadow: "0 0 40px #00ffff88",
+            overflow: "hidden",
+            display: "flex",
+          }}
         >
-          Login with Google
-        </Button>
-
-        {/* Register Link */}
-        <Typography color="white" textAlign="center">
-          New User?{" "}
-          <Link href="/register" style={{ color: "#4caf50", fontWeight: "bold", textDecoration: "none" }}>
-            Register here
-          </Link>
-        </Typography>
-
-        {/* Exit Link */}
-        <Typography color="white" textAlign="center">
-          Want to leave?{" "}
-          <Link
-            href="/"
-            style={{
-              color: "#f44336", // red color for exit
-              fontWeight: "bold",
-              textDecoration: "none",
+          {/* Left Panel */}
+          <Box
+            sx={{
+              width: "50%",
+              background: "linear-gradient(135deg, #00bcd4, #00838f)",
+              color: "white",
+              p: 4,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              zIndex: 2,
+              position: "relative",
             }}
           >
-            Exit
-          </Link>
-        </Typography>
-      </Container>
+            <Typography variant="h4" fontWeight="bold" sx={{ mt: -40 }}>
+              Welcome Back!
+            </Typography>
+            <Typography mt={2}>
+              Login to continue booking and managing your events with ease.
+            </Typography>
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                right: -1,
+                width: "100%",
+                height: "100%",
+                background: "#06283D",
+                clipPath: "polygon(100% 0, 0% 100%, 100% 100%)",
+                zIndex: 1,
+              }}
+            />
+          </Box>
 
-      {/* Snackbar for Error/Success messages */}
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={2000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <MuiAlert onClose={handleSnackbarClose} severity={snackbarSeverity} variant="filled" sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </MuiAlert>
-      </Snackbar>
-    </Box>
+          {/* Right Panel - Login Form */}
+          <Box
+            sx={{
+              width: "50%",
+              background: "#06283D",
+              p: 4,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              color: "white",
+              zIndex: 2,
+            }}
+          >
+            <Typography variant="h4" fontWeight="bold" mb={2}>
+              Login
+            </Typography>
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {/* Email Field */}
+              <Controller
+                name="email"
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Invalid email format",
+                  },
+                }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    placeholder="Email"
+                    variant="standard"
+                    fullWidth
+                    sx={{ input: { color: "white" }, mb: 2 }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <EmailIcon sx={{ color: "#00bcd4" }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    error={!!errors.email}
+                    helperText={errors.email?.message as string}
+                  />
+                )}
+              />
+
+              {/* Password Field */}
+              <Controller
+                name="password"
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: "Password is required",
+                  minLength: { value: 6, message: "Password must be at least 6 characters" },
+                }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    placeholder="Password"
+                    type="password"
+                    variant="standard"
+                    fullWidth
+                    sx={{ input: { color: "white" }, mb: 3 }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockIcon sx={{ color: "#00bcd4" }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    error={!!errors.password}
+                    helperText={errors.password?.message as string}
+                  />
+                )}
+              />
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                fullWidth
+                sx={{
+                  background: "linear-gradient(to right, #00bcd4, #00838f)",
+                  color: "white",
+                  borderRadius: "25px",
+                  textTransform: "none",
+                  py: 1,
+                  fontWeight: "bold",
+                  mb: 2,
+                  boxShadow: "0 0 10px #00ffff55",
+                }}
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Login"}
+              </Button>
+            </form>
+
+            {/* Google Login Button */}
+            <Button
+              fullWidth
+              variant="outlined"
+              sx={{
+                color: "#00bcd4",
+                borderColor: "#00bcd4",
+                py: 1.2,
+                fontWeight: "bold",
+                borderRadius: "25px",
+                textTransform: "none",
+                mb: 2,
+              }}
+              startIcon={<GoogleIcon />}
+              onClick={handleGoogleLoginClick}
+            >
+              Login with Google
+            </Button>
+
+            {/* Links */}
+            <Typography variant="body2" align="center">
+              New user?{" "}
+              <Link href="/register" style={{ color: "#00bcd4", fontWeight: "bold" }}>
+                Register
+              </Link>
+            </Typography>
+
+            <Typography variant="body2" align="center" mt={1}>
+              Want to leave?{" "}
+              <Link href="/" style={{ color: "#f44336", fontWeight: "bold" }}>
+                Exit
+              </Link>
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Snackbar */}
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <MuiAlert
+            onClose={handleSnackbarClose}
+            severity={snackbarSeverity}
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </MuiAlert>
+        </Snackbar>
+      </Box>
+    </>
   );
 }
